@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { Input, Textarea, TagInput, Btn, Spinner } from "@/components/ui";
+import { useState, useEffect } from "react";
+import { Input, Textarea, TagInput, ToggleChips, Btn, Spinner } from "@/components/ui";
 import JobCard from "@/components/JobCard";
 import Settings, { useUserApiKey } from "@/components/Settings";
 
@@ -43,14 +43,13 @@ export default function Home() {
   });
   const [crit, setCrit] = useState({
     postes: [
-      "Product Designer",
-      "UX Designer",
-      "UX/UI Designer",
+      "Product designer",
+      "UX designer",
+      "UX/UI designer",
       "Webdesigner",
       "Designer web",
     ],
-    loc: "Paris, Rennes, Nantes",
-    contrat: "CDI",
+    locs: ["Paris", "Rennes", "Nantes"],
     remote: "Hybride",
   });
   const [jobs, setJobs] = useState([]);
@@ -76,6 +75,21 @@ export default function Home() {
     }
   };
 
+  /* Auto-search on first load (no manual click needed) */
+  useEffect(() => {
+    // Only auto-search if no jobs loaded yet, page is on search tab, and criteria are filled
+    if (
+      jobs.length === 0 &&
+      tab === "search" &&
+      crit.postes.length > 0 &&
+      crit.locs.length > 0 &&
+      !busy
+    ) {
+      searchJobs();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   /* Search jobs */
   async function searchJobs() {
     setLoad("Recherche des offres en cours…");
@@ -86,16 +100,17 @@ export default function Home() {
         messages: [
           {
             role: "user",
-content: `Recherche les offres d'emploi les plus récentes sur LinkedIn, HelloWork et Indeed.
+            content: `Recherche les offres d'emploi les plus récentes sur LinkedIn, HelloWork et Indeed.
 Date du jour : ${new Date().toLocaleDateString("fr-FR")}
 Intitulés de poste recherchés (n'importe lequel correspond) : ${crit.postes.join(", ")}
-Localisations : ${crit.loc}
-Contrat : ${crit.contrat}
+Localisations : ${crit.locs.join(", ")}
+Contrat : CDI uniquement
 Télétravail : ${crit.remote}
 Profil candidat : ${profile.pitch}
 
 Trouve les offres correspondant à l'un des intitulés listés. Maximum 10 offres. Privilégie les plus récentes. Indique la source (LinkedIn / HelloWork / Indeed) dans "source" et l'ancienneté approximative dans "postedAgo" (ex: "aujourd'hui", "il y a 3 jours", "cette semaine", ou "récent" si tu ne peux pas le déterminer). Si tu trouves peu d'offres avec ces critères stricts, élargis légèrement. Retourne UNIQUEMENT ce JSON sans texte ni backticks :
-{"jobs":[{"id":"1","title":"","company":"","location":"","contract":"","salary":"","description":"","requirements":[],"url":"","source":"","postedAgo":""}]}`,          },
+{"jobs":[{"id":"1","title":"","company":"","location":"","contract":"","salary":"","description":"","requirements":[],"url":"","source":"","postedAgo":""}]}`,
+          },
         ],
         useWebSearch: true,
         system:
@@ -496,6 +511,13 @@ Retourne UNIQUEMENT ce JSON sans backticks :
                 placeholder="ex. UX Designer, puis Entrée"
                 note="Entrée ou virgule pour ajouter"
               />
+              <ToggleChips
+                label="Localisations"
+                options={["Paris", "Rennes", "Nantes", "Brest", "Lyon", "Full remote"]}
+                values={crit.locs}
+                onChange={(v) => setCrit((p) => ({ ...p, locs: v }))}
+                allowCustom
+              />
               <div
                 style={{
                   display: "grid",
@@ -504,25 +526,21 @@ Retourne UNIQUEMENT ce JSON sans backticks :
                 }}
               >
                 <Input
-                  label="Localisation"
-                  value={crit.loc}
-                  onChange={(v) => setCrit((p) => ({ ...p, loc: v }))}
-                />
-                <Input
-                  label="Contrat"
-                  value={crit.contrat}
-                  onChange={(v) => setCrit((p) => ({ ...p, contrat: v }))}
-                  options={["CDI", "CDD", "Freelance", "Stage", "Alternance"]}
-                />
-                <Input
                   label="Télétravail"
                   value={crit.remote}
                   onChange={(v) => setCrit((p) => ({ ...p, remote: v }))}
                   options={["Hybride", "Full remote", "Présentiel"]}
                 />
               </div>
-              <Btn onClick={searchJobs} disabled={!!busy || crit.postes.length === 0}>
-                {busy ? "Recherche…" : "Lancer la recherche →"}
+              <Btn
+                onClick={searchJobs}
+                disabled={
+                  !!busy || crit.postes.length === 0 || crit.locs.length === 0
+                }
+                variant="ghost"
+                small
+              >
+                {busy ? "Recherche…" : "↻ Actualiser"}
               </Btn>
               <div
                 style={{
@@ -533,7 +551,7 @@ Retourne UNIQUEMENT ce JSON sans backticks :
                   textAlign: "center",
                 }}
               >
-                Sources : LinkedIn · HelloWork · Indeed
+                Sources : LinkedIn · HelloWork · Indeed · Contrat : CDI
               </div>
             </div>
 
