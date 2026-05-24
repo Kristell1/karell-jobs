@@ -2,6 +2,145 @@
 
 import { useState } from "react";
 
+export function ToggleChips({ label, options, values, onChange, note, allowCustom }) {
+  const [adding, setAdding] = useState(false);
+  const [input, setInput] = useState("");
+
+  const toggle = (val) => {
+    if (values.includes(val)) {
+      onChange(values.filter((v) => v !== val));
+    } else {
+      onChange([...values, val]);
+    }
+  };
+
+  const addCustom = () => {
+    const trimmed = input.trim();
+    if (
+      trimmed &&
+      !values.some((v) => v.toLowerCase() === trimmed.toLowerCase()) &&
+      !options.some((o) => o.toLowerCase() === trimmed.toLowerCase())
+    ) {
+      onChange([...values, trimmed]);
+    }
+    setInput("");
+    setAdding(false);
+  };
+
+  // Build full chip list: predefined options + custom values not in options
+  const customValues = values.filter(
+    (v) => !options.some((o) => o.toLowerCase() === v.toLowerCase())
+  );
+  const allChips = [...options, ...customValues];
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "baseline",
+        }}
+      >
+        <label
+          style={{
+            fontFamily: "var(--mono)",
+            fontSize: 10,
+            color: "var(--muted)",
+            letterSpacing: "0.08em",
+            textTransform: "uppercase",
+          }}
+        >
+          {label}
+        </label>
+        {note && (
+          <span
+            style={{
+              fontFamily: "var(--mono)",
+              fontSize: 10,
+              color: "var(--dim)",
+            }}
+          >
+            {note}
+          </span>
+        )}
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        {allChips.map((opt) => {
+          const active = values.includes(opt);
+          return (
+            <button
+              key={opt}
+              onClick={() => toggle(opt)}
+              style={{
+                fontFamily: "var(--mono)",
+                fontSize: 12,
+                fontWeight: 500,
+                padding: "6px 12px",
+                borderRadius: 20,
+                border: `1px solid ${
+                  active ? "rgba(182,255,95,.35)" : "var(--border)"
+                }`,
+                background: active ? "var(--accent-dim)" : "transparent",
+                color: active ? "var(--accent)" : "var(--muted)",
+                cursor: "pointer",
+                transition: "all .15s",
+              }}
+            >
+              {opt}
+            </button>
+          );
+        })}
+        {allowCustom &&
+          (adding ? (
+            <input
+              autoFocus
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") addCustom();
+                if (e.key === "Escape") {
+                  setInput("");
+                  setAdding(false);
+                }
+              }}
+              onBlur={addCustom}
+              placeholder="Ville…"
+              style={{
+                background: "var(--card)",
+                border: "1px solid var(--border-light)",
+                borderRadius: 20,
+                padding: "5px 12px",
+                color: "var(--text)",
+                fontFamily: "var(--mono)",
+                fontSize: 12,
+                width: 110,
+                outline: "none",
+              }}
+            />
+          ) : (
+            <button
+              onClick={() => setAdding(true)}
+              style={{
+                fontFamily: "var(--mono)",
+                fontSize: 12,
+                padding: "6px 12px",
+                borderRadius: 20,
+                border: "1px dashed var(--border)",
+                background: "transparent",
+                color: "var(--muted)",
+                cursor: "pointer",
+                transition: "all .15s",
+              }}
+            >
+              + Autre
+            </button>
+          ))}
+      </div>
+    </div>
+  );
+}
+
 export function Tag({ children, accent }) {
   return (
     <span
