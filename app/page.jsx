@@ -43,9 +43,9 @@ export default function Home() {
   });
   const [crit, setCrit] = useState({
     postes: [
-      "Product designer",
-      "UX designer",
-      "UX/UI designer",
+      "Product Designer",
+      "UX Designer",
+      "UX/UI Designer",
       "Webdesigner",
       "Designer web",
     ],
