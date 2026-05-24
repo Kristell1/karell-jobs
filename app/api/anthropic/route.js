@@ -5,7 +5,8 @@
 
 import { checkRateLimit, MAX_SEARCHES_PER_DAY } from "@/lib/ratelimit";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
+export const maxDuration = 60;
 
 const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-sonnet-4-6";
