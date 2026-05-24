@@ -43,9 +43,9 @@ export default function Home() {
   });
   const [crit, setCrit] = useState({
     postes: [
-      "Product designer",
-      "UX designer",
-      "UX/UI designer",
+      "Product Designer",
+      "UX Designer",
+      "UX/UI Designer",
       "Webdesigner",
       "Designer web",
     ],
@@ -86,7 +86,7 @@ export default function Home() {
         messages: [
           {
             role: "user",
-            content: `Recherche des offres d'emploi PUBLIÉES DANS LES DERNIÈRES 72H sur LinkedIn, HelloWork et Indeed.
+content: `Recherche les offres d'emploi les plus récentes sur LinkedIn, HelloWork et Indeed.
 Date du jour : ${new Date().toLocaleDateString("fr-FR")}
 Intitulés de poste recherchés (n'importe lequel correspond) : ${crit.postes.join(", ")}
 Localisations : ${crit.loc}
@@ -94,9 +94,8 @@ Contrat : ${crit.contrat}
 Télétravail : ${crit.remote}
 Profil candidat : ${profile.pitch}
 
-CRITIQUE : Ne retourne QUE les offres publiées aujourd'hui ou il y a deux jours (max 72h). Maximum 10 offres. Si une offre n'a pas de date de publication récente visible, ne l'inclus pas. Si tu ne trouves aucune offre récente, retourne une liste vide. Indique la source réelle (LinkedIn / HelloWork / Indeed) dans "source" et l'ancienneté dans "postedAgo" (ex: "aujourd'hui", "il y a 3h", "hier"). Retourne UNIQUEMENT ce JSON sans texte ni backticks :
-{"jobs":[{"id":"1","title":"","company":"","location":"","contract":"","salary":"","description":"","requirements":[],"url":"","source":"","postedAgo":""}]}`,
-          },
+Trouve les offres correspondant à l'un des intitulés listés. Maximum 10 offres. Privilégie les plus récentes. Indique la source (LinkedIn / HelloWork / Indeed) dans "source" et l'ancienneté approximative dans "postedAgo" (ex: "aujourd'hui", "il y a 3 jours", "cette semaine", ou "récent" si tu ne peux pas le déterminer). Si tu trouves peu d'offres avec ces critères stricts, élargis légèrement. Retourne UNIQUEMENT ce JSON sans texte ni backticks :
+{"jobs":[{"id":"1","title":"","company":"","location":"","contract":"","salary":"","description":"","requirements":[],"url":"","source":"","postedAgo":""}]}`,          },
         ],
         useWebSearch: true,
         system:
