@@ -86,15 +86,16 @@ export default function Home() {
         messages: [
           {
             role: "user",
-            content: `Recherche des offres d'emploi actuelles sur LinkedIn, HelloWork et Indeed.
+            content: `Recherche des offres d'emploi PUBLIÉES DANS LES DERNIÈRES 24H sur LinkedIn, HelloWork et Indeed.
+Date du jour : ${new Date().toLocaleDateString("fr-FR")}
 Intitulés de poste recherchés (n'importe lequel correspond) : ${crit.postes.join(", ")}
 Localisations : ${crit.loc}
 Contrat : ${crit.contrat}
 Télétravail : ${crit.remote}
 Profil candidat : ${profile.pitch}
 
-Trouve des offres réelles et actuelles correspondant à l'un des intitulés listés. Indique la source réelle (LinkedIn / HelloWork / Indeed) dans le champ "source". Retourne UNIQUEMENT ce JSON sans texte ni backticks :
-{"jobs":[{"id":"1","title":"","company":"","location":"","contract":"","salary":"","description":"","requirements":[],"url":"","source":""}]}`,
+CRITIQUE : Ne retourne QUE les offres publiées aujourd'hui ou hier (max 24h). Maximum 10 offres. Si une offre n'a pas de date de publication récente visible, ne l'inclus pas. Si tu ne trouves aucune offre récente, retourne une liste vide. Indique la source réelle (LinkedIn / HelloWork / Indeed) dans "source" et l'ancienneté dans "postedAgo" (ex: "aujourd'hui", "il y a 3h", "hier"). Retourne UNIQUEMENT ce JSON sans texte ni backticks :
+{"jobs":[{"id":"1","title":"","company":"","location":"","contract":"","salary":"","description":"","requirements":[],"url":"","source":"","postedAgo":""}]}`,
           },
         ],
         useWebSearch: true,
